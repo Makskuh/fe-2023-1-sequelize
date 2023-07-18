@@ -12,7 +12,7 @@ module.exports.createUser = async (req, res) => {
 };
 
 module.exports.getUsers = async (req, res) => {
-  // const users = await User.findAll(); // SELECT * from users;
+  const users = await User.findAll(); // SELECT * from users;
 
   // const users = await User.findAll({
   //   attributes: ['firstName', 'email', 'isMale']
@@ -34,11 +34,11 @@ module.exports.getUsers = async (req, res) => {
   //   },
   // }); // SELECT * from users WHERE isMale = true;
 
-  const users = await User.findAll({
-    where: {
-      [Op.or]: [{ firstName: 'User' }, { id: 2 }],
-    },
-  }); // SELECT * from users WHERE isMale = true;
+  // const users = await User.findAll({
+  //   where: {
+  //     [Op.or]: [{ firstName: 'User' }, { id: 2 }],
+  //   },
+  // }); // SELECT * from users WHERE isMale = true;
 
   res.send({ data: users });
 };
@@ -100,10 +100,28 @@ module.exports.updateUserInstance = async (req, res) => {
   res.send({ data: updatedUser });
 };
 
-module.exports.deleteUser = (req, res) => {
+module.exports.deleteUser = async (req, res) => {
   const {
     params: { userId },
   } = req;
 
-  res.send(`user ${userId} is deleted`);
+  const deletedUser = await User.destroy({
+    where: {
+      id: userId,
+    },
+  });
+
+  res.send({ data: deletedUser });
+};
+
+module.exports.deleteUserInstance = async (req, res) => {
+  const {
+    params: { userId },
+  } = req;
+
+  const user = await User.findByPk(userId);
+
+  await user.destroy();
+
+  res.send({ data: user });
 };
