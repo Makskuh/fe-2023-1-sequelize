@@ -87,6 +87,19 @@ module.exports.updateUser = async (req, res) => {
   res.send({ data: userWithoutPassword });
 };
 
+module.exports.updateUserInstance = async (req, res) => {
+  const {
+    body,
+    params: { userId },
+  } = req;
+
+  const userToUpdate = await User.findByPk(userId);
+
+  const updatedUser = await userToUpdate.update(body);
+
+  res.send({ data: updatedUser });
+};
+
 module.exports.deleteUser = (req, res) => {
   const {
     params: { userId },

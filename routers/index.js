@@ -16,4 +16,6 @@ userRouter
   .put(UserController.updateUser)
   .delete(UserController.deleteUser);
 
+userRouter.put('/users/v2/:userId', UserController.updateUserInstance);
+
 module.exports = userRouter;
