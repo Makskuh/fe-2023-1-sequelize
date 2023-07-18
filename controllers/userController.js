@@ -65,7 +65,27 @@ module.exports.getUser = async (req, res) => {
   res.send({ data: user });
 };
 
-module.exports.updateUser = (req, res) => {};
+module.exports.updateUser = async (req, res) => {
+  const {
+    body,
+    params: { userId },
+  } = req;
+
+  const [usersUpdated, [updatedUser]] = await User.update(body, {
+    where: {
+      id: userId,
+    },
+    returning: true,
+    // returning: ['id', 'firstName'],
+  });
+
+  const userWithoutPassword = updatedUser.get();
+
+  delete userWithoutPassword.password;
+  userWithoutPassword.password = undefined;
+
+  res.send({ data: userWithoutPassword });
+};
 
 module.exports.deleteUser = (req, res) => {
   const {
