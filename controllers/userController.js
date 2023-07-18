@@ -43,7 +43,27 @@ module.exports.getUsers = async (req, res) => {
   res.send({ data: users });
 };
 
-module.exports.getUser = (req, res) => {};
+module.exports.getUser = async (req, res) => {
+  const {
+    params: { userId },
+  } = req;
+
+  // завжди повертає один
+  // const user = await User.findOne({
+  //   where: {
+  //     id: userId,
+  //   },
+  // });
+
+  // шукає по первинному ключу
+  const user = await User.findByPk(userId, {
+    attributes: {
+      exclude: ['password'],
+    },
+  });
+
+  res.send({ data: user });
+};
 
 module.exports.updateUser = (req, res) => {};
 
