@@ -7,5 +7,6 @@ module.exports.sequelizeUniqueConflictHandler = async (err, req, res, next) => {
 };
 
 module.exports.basicHandler = async (err, req, res, next) => {
-  res.status(500).send({ errors: ['Error happened'] });
+  const status = err.status || 500;
+  res.status(status).send({ errors: [ err ] });
 };
