@@ -20,6 +20,8 @@ module.exports = {
           model: 'users',
           key: 'id',
         },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       body: {
         type: Sequelize.TEXT,
