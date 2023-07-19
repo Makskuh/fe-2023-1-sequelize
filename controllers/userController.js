@@ -1,127 +1,159 @@
 const { Op } = require('sequelize');
 const { User } = require('../models');
 
-module.exports.createUser = async (req, res) => {
-  const { body } = req;
+module.exports.createUser = async (req, res, next) => {
+  try {
+    const { body } = req;
 
-  const user = await User.create(body);
+    const user = await User.create(body);
 
-  // console.log(user);
+    // console.log(user);
 
-  res.send({ data: user });
+    res.send({ data: user });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports.getUsers = async (req, res) => {
-  const users = await User.findAll(); // SELECT * from users;
+module.exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await User.findAll(); // SELECT * from users;
 
-  // const users = await User.findAll({
-  //   attributes: ['firstName', 'email', 'isMale']
-  // }); // SELECT firstName, email, isMale from users;
+    // const users = await User.findAll({
+    //   attributes: ['firstName', 'email', 'isMale']
+    // }); // SELECT firstName, email, isMale from users;
 
-  // const users = await User.findAll({
-  //   attributes: [['first_name', 'name'], 'email', 'isMale'],
-  // }); // SELECT firstName as name, email, isMale from users;
+    // const users = await User.findAll({
+    //   attributes: [['first_name', 'name'], 'email', 'isMale'],
+    // }); // SELECT firstName as name, email, isMale from users;
 
-  // const users = await User.findAll({
-  //   attributes: {
-  //     exclude: ['password', 'createdAt', 'updatedAt'],
-  //   },
-  // }); // SELECT все крім password, createdAt, updatedAt from users;
+    // const users = await User.findAll({
+    //   attributes: {
+    //     exclude: ['password', 'createdAt', 'updatedAt'],
+    //   },
+    // }); // SELECT все крім password, createdAt, updatedAt from users;
 
-  // const users = await User.findAll({
-  //   where: {
-  //     isMale: true,
-  //   },
-  // }); // SELECT * from users WHERE isMale = true;
+    // const users = await User.findAll({
+    //   where: {
+    //     isMale: true,
+    //   },
+    // }); // SELECT * from users WHERE isMale = true;
 
-  // const users = await User.findAll({
-  //   where: {
-  //     [Op.or]: [{ firstName: 'User' }, { id: 2 }],
-  //   },
-  // }); // SELECT * from users WHERE isMale = true;
+    // const users = await User.findAll({
+    //   where: {
+    //     [Op.or]: [{ firstName: 'User' }, { id: 2 }],
+    //   },
+    // }); // SELECT * from users WHERE isMale = true;
 
-  res.send({ data: users });
+    res.send({ data: users });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports.getUser = async (req, res) => {
-  const {
-    params: { userId },
-  } = req;
+module.exports.getUser = async (req, res, next) => {
+  try {
+    const {
+      params: { userId },
+    } = req;
 
-  // завжди повертає один
-  // const user = await User.findOne({
-  //   where: {
-  //     id: userId,
-  //   },
-  // });
+    // завжди повертає один
+    // const user = await User.findOne({
+    //   where: {
+    //     id: userId,
+    //   },
+    // });
 
-  // шукає по первинному ключу
-  const user = await User.findByPk(userId, {
-    attributes: {
-      exclude: ['password'],
-    },
-  });
+    // шукає по первинному ключу
+    const user = await User.findByPk(userId, {
+      attributes: {
+        exclude: ['password'],
+      },
+    });
 
-  res.send({ data: user });
+    res.send({ data: user });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports.updateUser = async (req, res) => {
-  const {
-    body,
-    params: { userId },
-  } = req;
+module.exports.updateUser = async (req, res, next) => {
+  try {
+    const {
+      body,
+      params: { userId },
+    } = req;
 
-  const [usersUpdated, [updatedUser]] = await User.update(body, {
-    where: {
-      id: userId,
-    },
-    returning: true,
-    // returning: ['id', 'firstName'],
-  });
+    const [usersUpdated, [updatedUser]] = await User.update(body, {
+      where: {
+        id: userId,
+      },
+      returning: true,
+      // returning: ['id', 'firstName'],
+    });
 
-  const userWithoutPassword = updatedUser.get();
+    if(usersUpdated !== 1) {
+      throw new Error('User not found');
+    }
 
-  delete userWithoutPassword.password;
-  userWithoutPassword.password = undefined;
+    const userWithoutPassword = updatedUser.get();
 
-  res.send({ data: userWithoutPassword });
+    delete userWithoutPassword.password;
+    userWithoutPassword.password = undefined;
+
+    res.send({ data: userWithoutPassword });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports.updateUserInstance = async (req, res) => {
-  const {
-    body,
-    params: { userId },
-  } = req;
+module.exports.updateUserInstance = async (req, res, next) => {
+  try {
+    const {
+      body,
+      params: { userId },
+    } = req;
 
-  const userToUpdate = await User.findByPk(userId);
+    const userToUpdate = await User.findByPk(userId);
 
-  const updatedUser = await userToUpdate.update(body);
+    const updatedUser = await userToUpdate.update(body);
 
-  res.send({ data: updatedUser });
+    res.send({ data: updatedUser });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports.deleteUser = async (req, res) => {
-  const {
-    params: { userId },
-  } = req;
+module.exports.deleteUser = async (req, res, next) => {
+  try {
+    const {
+      params: { userId },
+    } = req;
 
-  const deletedUser = await User.destroy({
-    where: {
-      id: userId,
-    },
-  });
+    const amountDeleted = await User.destroy({
+      where: {
+        id: userId,
+      },
+    });
 
-  res.send({ data: deletedUser });
+    res.send({ data: amountDeleted });
+  } catch (error) {
+    next(error);
+  }
 };
 
-module.exports.deleteUserInstance = async (req, res) => {
-  const {
-    params: { userId },
-  } = req;
+module.exports.deleteUserInstance = async (req, res, next) => {
+  try {
+    const {
+      params: { userId },
+    } = req;
 
-  const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId);
 
-  await user.destroy();
+    await user.destroy();
 
-  res.send({ data: user });
+    res.send({ data: user });
+  } catch (error) {
+    next(error);
+  }
 };
