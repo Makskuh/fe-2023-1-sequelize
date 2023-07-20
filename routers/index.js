@@ -18,6 +18,11 @@ userRouter
   .delete(UserController.deleteUser);
 
 userRouter.post('/users/:userId/tasks', TaskController.createTask);
+userRouter.get('/users/:userId/tasks', TaskController.getTasks);
+
+userRouter.get('/users/:userId/tasks/:taskId', TaskController.getTask);
+userRouter.put('/users/:userId/tasks/:taskId', TaskController.updateTask);
+userRouter.delete('/users/:userId/tasks/:taskId', TaskController.deleteTask);
 
 userRouter.put('/users/v2/:userId', UserController.updateUserInstance);
 userRouter.delete('/users/v2/:userId', UserController.deleteUserInstance);
