@@ -1,32 +1,11 @@
 const taskRouter = require('express').Router();
 const TaskController = require('../controllers/taskController');
-const { checkUserExistanceMW } = require('../middlewares/users.mv');
 
-taskRouter.post(
-  '/users/:userId/tasks',
-  checkUserExistanceMW,
-  TaskController.createTask
-);
-taskRouter.get(
-  '/users/:userId/tasks',
-  checkUserExistanceMW,
-  TaskController.getTasks
-);
+taskRouter.post('/', TaskController.createTask);
+taskRouter.get('/', TaskController.getTasks);
 
-taskRouter.get(
-  '/users/:userId/tasks/:taskId',
-  checkUserExistanceMW,
-  TaskController.getTask
-);
-taskRouter.put(
-  '/users/:userId/tasks/:taskId',
-  checkUserExistanceMW,
-  TaskController.updateTask
-);
-taskRouter.delete(
-  '/users/:userId/tasks/:taskId',
-  checkUserExistanceMW,
-  TaskController.deleteTask
-);
+taskRouter.get('/:taskId', TaskController.getTask);
+taskRouter.put('/:taskId', TaskController.updateTask);
+taskRouter.delete('/:taskId', TaskController.deleteTask);
 
 module.exports = taskRouter;
