@@ -1,5 +1,5 @@
 const createHttpError = require('http-errors');
-const { Group, User } = require('../models');
+const { Group, User, Task } = require('../models');
 
 module.exports.createGroup = async (req, res, next) => {
   try {
@@ -29,15 +29,27 @@ module.exports.getUserGroups = async (req, res, next) => {
       params: { userId },
     } = req;
 
-    const user = await User.findByPk(userId);
+    const userWithGroups = await User.findByPk(userId, {
+      include: [{
+        model: Group,
+        through: {
+          attributes: [],
+        },
+        attributes: ['id', 'name', 'description', 'imagePath'],
+      },
+      // {
+      //   model: Task
+      // }
+    ],
+    });
 
-    if (!user) {
+    if (!userWithGroups) {
       return next(createHttpError(404, 'User doesnt exist'));
     }
 
-    const groups = await user.getGroups();
+    // const groups = await user.getGroups();
 
-    res.send({ data: groups });
+    res.send({ data: userWithGroups });
   } catch (error) {
     next(error);
   }
