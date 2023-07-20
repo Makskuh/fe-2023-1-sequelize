@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { User } = require('../models');
+const { User, Group } = require('../models');
 const createHttpError = require('http-errors');
 
 module.exports.createUser = async (req, res, next) => {
@@ -18,7 +18,18 @@ module.exports.createUser = async (req, res, next) => {
 
 module.exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.findAll(); // SELECT * from users;
+    const users = await User.findAll({
+      include: [
+        {
+          model: Group,
+          through: {
+            attributes: [],
+          },
+          // required: true INNER JOIN
+          // right: true, // RIGHT JOIN
+        },
+      ],
+    }); // SELECT * from users;
 
     // const users = await User.findAll({
     //   attributes: ['firstName', 'email', 'isMale']
