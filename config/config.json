@@ -2,7 +2,7 @@
   "development": {
     "username": "postgres",
     "password": "postgres",
-    "database": "fe_2023_1_sequelize",
+    "database": "redux",
     "host": "127.0.0.1",
     "dialect": "postgres",
     "migrationStorage": "json",
